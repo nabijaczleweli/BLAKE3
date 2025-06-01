@@ -270,7 +270,7 @@ jobs:
     - uses: actions/checkout@v4
     - run: |
         sudo apt-get update
-        sudo apt-get install ninja-build libtbb-dev libtbb12
+        sudo apt-get install ninja-build libtbb-dev libtbb12 g++-x86-64-linux-gnux32
     # Test the intrinsics-based and assembly-based implementations.
     - run: |
         cmake --fresh -S c -B c/build -G Ninja -DBLAKE3_TESTING=ON -DBLAKE3_TESTING_CI=ON "-DBLAKE3_SIMD_TYPE=${{ matrix.simd }}"
@@ -290,6 +290,27 @@ jobs:
         cat c/build/Testing/Temporary/LastTest.log
     - run: |
         cmake --fresh -S c -B c/build -G Ninja -DBLAKE3_TESTING=ON -DBLAKE3_TESTING_CI=ON "-DBLAKE3_SIMD_TYPE=${{ matrix.simd }}" "-DBLAKE3_NO_SSE2=1" "-DBLAKE3_NO_SSE41=1" "-DBLAKE3_NO_AVX2=1" "-DBLAKE3_NO_AVX512=1"
+        cmake --build c/build --target test
+        cat c/build/Testing/Temporary/LastTest.log
+    # x32
+    - run: |
+        cmake --fresh -S c -B c/build -G Ninja -DBLAKE3_TESTING=ON -DBLAKE3_TESTING_CI=ON -DCMAKE_C_COMPILER=x86_64-linux-gnux32-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnux32-g++  "-DBLAKE3_SIMD_TYPE=${{ matrix.simd }}"
+        cmake --build c/build --target test
+        cat c/build/Testing/Temporary/LastTest.log
+    - run: |
+        cmake --fresh -S c -B c/build -G Ninja -DBLAKE3_TESTING=ON -DBLAKE3_TESTING_CI=ON -DCMAKE_C_COMPILER=x86_64-linux-gnux32-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnux32-g++  "-DBLAKE3_SIMD_TYPE=${{ matrix.simd }}" -DBLAKE3_NO_SSE2=1
+        cmake --build c/build --target test
+        cat c/build/Testing/Temporary/LastTest.log
+    - run: |
+        cmake --fresh -S c -B c/build -G Ninja -DBLAKE3_TESTING=ON -DBLAKE3_TESTING_CI=ON -DCMAKE_C_COMPILER=x86_64-linux-gnux32-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnux32-g++  "-DBLAKE3_SIMD_TYPE=${{ matrix.simd }}" -DBLAKE3_NO_SSE2=1 -DBLAKE3_NO_SSE41=1
+        cmake --build c/build --target test
+        cat c/build/Testing/Temporary/LastTest.log
+    - run: |
+        cmake --fresh -S c -B c/build -G Ninja -DBLAKE3_TESTING=ON -DBLAKE3_TESTING_CI=ON -DCMAKE_C_COMPILER=x86_64-linux-gnux32-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnux32-g++  "-DBLAKE3_SIMD_TYPE=${{ matrix.simd }}" "-DBLAKE3_NO_SSE2=1" "-DBLAKE3_NO_SSE41=1" "-DBLAKE3_NO_AVX2=1"
+        cmake --build c/build --target test
+        cat c/build/Testing/Temporary/LastTest.log
+    - run: |
+        cmake --fresh -S c -B c/build -G Ninja -DBLAKE3_TESTING=ON -DBLAKE3_TESTING_CI=ON -DCMAKE_C_COMPILER=x86_64-linux-gnux32-gcc -DCMAKE_CXX_COMPILER=x86_64-linux-gnux32-g++  "-DBLAKE3_SIMD_TYPE=${{ matrix.simd }}" "-DBLAKE3_NO_SSE2=1" "-DBLAKE3_NO_SSE41=1" "-DBLAKE3_NO_AVX2=1" "-DBLAKE3_NO_AVX512=1"
         cmake --build c/build --target test
         cat c/build/Testing/Temporary/LastTest.log
     # Test with TBB disabled/enabled.
